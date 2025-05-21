@@ -95,3 +95,101 @@ View(final_df)
 # tempdf -> final_statewise_gsdp
 getwd()
 
+#  Q1. For every financial year , which sector has performed well 
+
+final_df %>%
+  group_by(year, item) %>%
+  summarise(total_gsdp = sum(gsdp, na.rm = TRUE), .groups = "drop") %>%
+  group_by(year) %>%
+  slice_max(order_by = total_gsdp, n = 1)
+
+#Q2 . For every financial year which sector has perfrmed least
+final_df %>%
+  group_by(year, item) %>%
+  summarise(total_gsdp = sum(gsdp, na.rm = TRUE), .groups = "drop") %>%
+  group_by(year) %>%
+  slice_min(order_by = total_gsdp, n = 1)
+
+#Q3 For every financial year which state has performed well 
+final_df %>%
+  group_by(year, state) %>%
+  summarise(total_gsdp = sum(gsdp, na.rm = TRUE), .groups = "drop") %>%
+  group_by(year) %>%
+  slice_max(order_by = total_gsdp, n = 1)
+
+#Q4.For every financial year which state has performed least 
+final_df %>%
+  group_by(year, state) %>%
+  summarise(total_gsdp = sum(gsdp, na.rm = TRUE), .groups = "drop") %>%
+  group_by(year) %>%
+  slice_min(order_by = total_gsdp, n = 1)
+
+# Q5. Top 5 performing states in Manufacturing
+final_df %>%
+  filter(item=="Manufacturing") %>% 
+  group_by(state) %>%
+  summarise(total_gsdp = sum(gsdp, na.rm = TRUE), .groups = "drop") %>% 
+  arrange(desc(total_gsdp)) %>%
+  slice_head(n = 5)
+
+#Q6. Top 5 performing states in Construction
+
+final_df %>%
+  filter(item=="Construction") %>% 
+  group_by(state) %>%
+  summarise(total_gsdp = sum(gsdp, na.rm = TRUE), .groups = "drop") %>% 
+  arrange(desc(total_gsdp)) %>%
+  slice_head(n = 5)
+
+#7. For financial year 2016-17, for every state get top performing sector
+final_df %>%
+  filter(year == "2016-17") %>% 
+  group_by(state, item) %>%
+  summarise(total_gsdp = sum(gsdp, na.rm = TRUE), .groups = "drop") %>% 
+  group_by(state) %>%
+  slice_max(order_by = total_gsdp, n = 1)
+
+#8. For financial year 2016-17, for every state get top 5 performing sectors
+final_df %>%
+  filter(year == "2016-17") %>% 
+  group_by(state, item) %>%
+  summarise(total_gsdp = sum(gsdp, na.rm = TRUE), .groups = "drop") %>% 
+  group_by(state) %>%
+  slice_max(order_by = total_gsdp, n = 5)
+#9. How many states are performing well in Manufacturing, (if Manufacturing is in top 3)
+final_df %>%
+  group_by(state, item) %>%
+  summarise(total_gsdp = sum(gsdp, na.rm = TRUE), .groups = "drop") %>% 
+  group_by(state) %>% 
+  slice_max(order_by = total_gsdp, n = 3)-> df_c %>% 
+  View(df_c) %>% 
+  filter(item == "Manufacturing")%>% 
+  summarise(no_of_states = n_distinct(state))
+
+#10. What is the GROSS GSDP of Karnataka for all financial years
+final_df %>%
+  filter(state == "Karnataka") %>% 
+  group_by(year) %>%
+  summarise(total_gsdp = sum(gsdp, na.rm = TRUE), .groups = "drop")  
+
+# ## 11. what is the percentage contribution of each sector  in the total gsdp of all sectors for  karnataka in the year 2015-16
+# final_df %>%
+#   filter(state == "Karnataka") %>%
+#   filter(year == "2015-16") %>%
+#   summarise(total_gsdp = sum(gsdp, na.rm = TRUE))
+
+
+## 11. what is the percentage contribution of each sector  in the total gsdp of all sectors for  karnataka in the year 2015-16
+  final_df %>%
+  filter(state == "Karnataka", year == "2015-16") %>%
+  group_by(item) %>%
+  summarise(sector_gsdp = sum(gsdp, na.rm = TRUE), .groups = "drop") %>%
+  mutate(
+    total_gsdp = sum(sector_gsdp),
+    percentage_contribution = round((sector_gsdp / total_gsdp) * 100, 2)
+  ) %>%
+  select(item, percentage_contribution)
+
+
+
+  
